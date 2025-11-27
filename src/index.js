@@ -1,38 +1,20 @@
-// src/index.js
-import compression from 'compression'
-import express from 'express'
-import cors from 'cors'
-import routes from './routes.js'
-import { config } from 'dotenv'
-import connect_MongoDB from './database/mongoDB.js'
+import express from 'express';
+import cors from 'cors';
 
-config() // Inicializa variáveis de ambiente
+const app = express();
 
-const app = express()
+app.use(express.json());
+app.use(cors());
 
-// Conecta ao Banco
-// Nota: Em Serverless, evitamos 'await' no topo para não bloquear a exportação do app.
-// O Mongoose (se for o que você usa) gerencia o buffer de conexão automaticamente.
-connect_MongoDB()
+// Rota Raiz OBRIGATÓRIA para não dar 404 na Home
+app.get("/", (req, res) => {
+    return res.status(200).send("🚀 API Vercel Funcionando! O problema era configuração.");
+});
 
-// Middlewares
-app.use(express.json())
-app.use(cors())
-app.use(compression())
+// Rota de teste secundária
+app.get("/ping", (req, res) => {
+    return res.json({ pong: true, time: new Date() });
+});
 
-// Rotas
-app.use("/", routes)
-
-// --- LÓGICA HÍBRIDA (LOCAL vs VERCEL) ---
-
-// Se o arquivo for executado diretamente (node src/index.js), roda o servidor localmente
-// Se for importado pela Vercel, essa parte é ignorada
-if (process.env.NODE_ENV !== 'production') {
-    const PORT = process.env.PORT || 3333
-    app.listen(PORT, () => {
-        console.log(`🔥 API rodando localmente na porta: ${PORT}`)
-    })
-}
-
-// Exporta o app para a Vercel usar
-export default app
+// Exportação Padrão
+export default app;
