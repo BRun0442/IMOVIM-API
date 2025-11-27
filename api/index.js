@@ -1,13 +1,5 @@
-import express from 'express';
-const app = express();
+import app from '../src/index.js';
 
-app.get("/", (req, res) => {
-  res.send("FUNCIONOU! O problema era a importação.");
-});
-
-// Rota coringa para pegar qualquer coisa
-app.get("*", (req, res) => {
-  res.send("Rota coringa funcionando.");
-});
-
-export default app;
+export default function handler(req, res) {
+  return app(req, res);
+}
