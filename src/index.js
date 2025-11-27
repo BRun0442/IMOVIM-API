@@ -1,20 +1,31 @@
-import express from 'express';
-import cors from 'cors';
+import compression from 'compression'
+import express from 'express'
+import cors from 'cors'
+import routes from './routes.js' // Garanta que routes.js está na mesma pasta (src)
+import { config } from 'dotenv'
+import connect_MongoDB from './database/mongoDB.js' // Aponta para src/database
 
-const app = express();
+config()
 
-app.use(express.json());
-app.use(cors());
+const app = express()
 
-// Rota Raiz OBRIGATÓRIA para não dar 404 na Home
-app.get("/", (req, res) => {
-    return res.status(200).send("🚀 API Vercel Funcionando! O problema era configuração.");
-});
+// Conexão sem await no topo
+connect_MongoDB()
+    .then(() => console.log("Mongo Conectado"))
+    .catch(err => console.error(err));
 
-// Rota de teste secundária
-app.get("/ping", (req, res) => {
-    return res.json({ pong: true, time: new Date() });
-});
+app.use(express.json())
+app.use(cors())
+app.use(compression())
 
-// Exportação Padrão
-export default app;
+app.use("/", routes)
+
+// Só roda o listen se for local
+if (process.env.NODE_ENV !== 'production') {
+    const PORT = process.env.PORT || 3333
+    app.listen(PORT, () => {
+        console.log(`Running locally on ${PORT}`)
+    })
+}
+
+export default app
