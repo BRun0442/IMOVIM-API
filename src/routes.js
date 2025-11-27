@@ -1,4 +1,5 @@
-import express from "express"
+import { Router } from "express" // <--- Importe apenas o Router
+// Seus imports continuam iguais...
 import userRoutes from "./controllers/userController.js"
 import postRoutes from "./controllers/postController.js"
 import commentRoutes from "./controllers/commentController.js"
@@ -12,7 +13,7 @@ import blockRoutes from "./controllers/blockController.js"
 import reportRoutes from "./controllers/reportController.js"
 import emailRoutes from "./mailer/send.js"
 
-const routes = express()
+const routes = Router()
 
 routes.use("/mail", emailRoutes)
 routes.use("/block", blockRoutes)
